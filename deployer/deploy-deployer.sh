@@ -7,7 +7,8 @@
 set -euo pipefail
 
 LOG_FILE="/var/log/opensonic/deploy-deployer.log"
-CONF_FILE="/etc/opensonic/deploy-deployer.conf"
+#CONF_FILE="/etc/opensonic/deploy-deployer.conf"
+CONF_FILE="./deploy-deployer.conf"
 
 mkdir -p "$(dirname "$LOG_FILE")"
 touch "$LOG_FILE"
@@ -25,7 +26,7 @@ die() { log "ERROR: $*"; exit 1; }
 [[ ${EUID:-0} -eq 0 ]] || die "Run as root."
 
 # ----------------------------
-# Defaults (override in /etc/opensonic/deploy-deployer.conf)
+# Defaults (override in deploy-deployer.conf)
 # ----------------------------
 : "${DEPLOYER_HOSTNAME:=deployer01}"
 : "${DEPLOYER_DOMAIN:=home.lab}"
@@ -62,7 +63,7 @@ die() { log "ERROR: $*"; exit 1; }
 
 # What to do
 : "${INSTALL_TFTP:=1}"
-: "${INSTALL_DHCP:=1}"
+: "${INSTALL_DHCP:=0}"
 : "${INSTALL_NGINX:=1}"
 : "${CONFIGURE_SELINUX:=1}"
 : "${DOWNLOAD_ROCKY_ISO:=1}"
