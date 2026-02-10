@@ -310,7 +310,7 @@ if [[ "$DOWNLOAD_ROCKY_ISO" == "1" ]]; then
 
   if [[ ! -f "$ISO_PATH" ]]; then
     log "Downloading ISO: $ROCKY_ISO_URL"
-    wget -O "$ISO_PATH" "$ROCKY_ISO_URL"
+    wget -q -O "$ISO_PATH" "$ROCKY_ISO_URL"
   else
     log "ISO already present: $ISO_PATH"
   fi
