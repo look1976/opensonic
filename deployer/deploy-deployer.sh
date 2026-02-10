@@ -57,7 +57,7 @@ die() { log "ERROR: $*"; exit 1; }
 : "${ISO_DIR:=${WWW_ROOT}/iso}"
 
 # kickstarts source (optional)
-: "${GITHUB_REPO_URL:=https://github.com/look1976/opensonic/kickstarts}"    # e.g. https://raw.githubusercontent.com/<org>/<repo>/kickstarts
+: "${GITHUB_REPO_URL:=https://github.com/look1976/opensonic/tree/main/kickstarts}"    # e.g. https://raw.githubusercontent.com/<org>/<repo>/kickstarts
 : "${CLOUDSTACK_KS:=cloudstack.cfg}"
 : "${KVMNODE_KS:=kvmnode.cfg}"
 
