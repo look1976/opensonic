@@ -37,7 +37,7 @@ virt-install \
   --memory 4096 \
   --vcpus 4 \
   --cpu host-passthrough \
-  --disk path=$DISK_PATH,size=8,format=qcow2,bus=virtio \
+  --disk path=$DISK_PATH,size=10,format=qcow2,bus=virtio \
   --os-variant rocky9 \
   --network bridge=cloudbr0,model=virtio \
   --location http://$DEPLOYER/rocky9 \
