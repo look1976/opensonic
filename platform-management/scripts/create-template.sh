@@ -15,6 +15,12 @@ export KVM_USER="${KVM_USER:-look}"
 export LIBVIRT_DEFAULT_URI="${LIBVIRT_DEFAULT_URI:-qemu+ssh://${KVM_USER}@${KVM_HOST}/system}"
 export VMNAME="${VMNAME:-rocky9-build}"
 
+#: "${CLOUDSTACK_ZONEID:?Set CLOUDSTACK_ZONEID}"
+: "${CLOUDSTACK_OSTYPEID:?Set CLOUDSTACK_OSTYPEID}"
+CLOUDSTACK_OSTYPEID="${CLOUDSTACK_OSTYPEID:-"Rocky Linux 9"}"
+
+command -v cmk >/dev/null 2>&1 || { log "ERROR: cmk (Cloudmonkey binary) not found"; exit 1; }
+
 # --- NEW: build timestamp for versioned artifacts ---
 # Format: YYYYMMDD-HHMMSS (safe for filenames + URLs)
 BUILD_TS="${BUILD_TS:-$(date +%Y%m%d-%H%M%S)}"
@@ -51,6 +57,8 @@ UNDEFINE_VM="${UNDEFINE_VM:-yes}"     # yes/no
 # Timeouts
 WAIT_INSTALL_SECONDS="${WAIT_INSTALL_SECONDS:-1800}"  # 30 min
 WAIT_SHUTDOWN_SECONDS="${WAIT_SHUTDOWN_SECONDS:-120}" # 2 min
+
+TEMPLATE_NAME="${VMNAME}-${BUILD_TS}"
 
 # -------------------------
 # helpers
@@ -97,6 +105,52 @@ wait_until_off() {
   done
 }
 
+select_cloudstack_zone() {
+
+  # jeśli już ustawione — nie pytaj
+  if [[ -n "${CLOUDSTACK_ZONEID:-}" ]]; then
+    log "CloudStack: using CLOUDSTACK_ZONEID=${CLOUDSTACK_ZONEID}"
+    return 0
+  fi
+
+  command -v cmk >/dev/null 2>&1 || { log "ERROR: cmk not found"; exit 1; }
+  command -v jq  >/dev/null 2>&1 || { log "ERROR: jq not found (dnf install jq)"; exit 1; }
+
+  log "CloudStack: fetching available zones..."
+
+  ZONES_JSON="$(cmk listZones 2>/dev/null)" || {
+    log "ERROR: cannot list zones"
+    exit 1
+  }
+
+  mapfile -t ZONE_IDS   < <(echo "$ZONES_JSON" | jq -r '.zone[]?.id')
+  mapfile -t ZONE_NAMES < <(echo "$ZONES_JSON" | jq -r '.zone[]?.name')
+
+  if [[ "${#ZONE_IDS[@]}" -eq 0 ]]; then
+    log "ERROR: no zones returned by CloudStack"
+    exit 1
+  fi
+
+  echo
+  echo "Available CloudStack Zones:"
+  for i in "${!ZONE_IDS[@]}"; do
+    printf "  [%d] %s (id=%s)\n" "$((i+1))" "${ZONE_NAMES[$i]}" "${ZONE_IDS[$i]}"
+  done
+  echo
+
+  while true; do
+    read -rp "Select zone number: " choice
+    if [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#ZONE_IDS[@]} )); then
+      CLOUDSTACK_ZONEID="${ZONE_IDS[$((choice-1))]}"
+      export CLOUDSTACK_ZONEID
+      log "CloudStack: selected zone ${ZONE_NAMES[$((choice-1))]} (id=${CLOUDSTACK_ZONEID})"
+      break
+    else
+      echo "Invalid selection."
+    fi
+  done
+}
+
 # -------------------------
 # sanity checks
 # -------------------------
@@ -106,6 +160,8 @@ log "KS_URL=${KS_URL}"
 log "Remote build disk: ${KVM_HOST}:${DISK_PATH}"
 log "Remote output img: ${KVM_HOST}:${OUT_IMG}"
 log "Publish target:    ${DEPLOYER}:${PUBLISH_PATH}"
+
+select_cloudstack_zone
 
 virsh list --all >/dev/null
 remote_kvm "sudo mkdir -p '${OUT_DIR}'"
@@ -259,3 +315,16 @@ log "  ${PUBLISH_PATH}"
 log "  ${PUBLISH_PATH}.sha256"
 log "CloudStack URL:"
 log "  http://${DEPLOYER}/cloudstack-images/${PUBLISH_NAME}"
+
+
+cmk register template \
+  name="${TEMPLATE_NAME}" \
+  displaytext="Rocky 9 build ${BUILD_TS}" \
+  url="http://${DEPLOYER}/cloudstack-images/${PUBLISH_NAME}" \
+  hypervisor=KVM \
+  format=QCOW2 \
+  ostypeid="${CLOUDSTACK_OSTYPEID}" \
+  zoneid="${CLOUDSTACK_ZONEID}" \
+  ispublic=true \
+  isfeatured=true \
+  passwordenabled=false
