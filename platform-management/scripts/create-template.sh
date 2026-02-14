@@ -204,6 +204,9 @@ remote_kvm "sudo sha256sum '${OUT_IMG}' | sudo tee '${OUT_IMG}.sha256' >/dev/nul
 # -------------------------
 # publish to deployer (cloudstack-images/)
 # -------------------------
+# -------------------------
+# publish to deployer (cloudstack-images/)
+# -------------------------
 log "Ensuring target directory exists on deployer: ${DEPLOYER_IMG_DIR}"
 remote_deployer "sudo mkdir -p '${DEPLOYER_IMG_DIR}'"
 
@@ -212,6 +215,7 @@ TMPDIR="$(mktemp -d)"
 cleanup(){ rm -rf "${TMPDIR}"; }
 trap cleanup EXIT
 
+# 1. Pull from KVM to local tmp
 rsync -avP -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new" \
   "${KVM_USER}@${KVM_HOST}:${OUT_IMG}" \
   "${TMPDIR}/"
@@ -220,17 +224,27 @@ rsync -avP -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new" \
   "${KVM_USER}@${KVM_HOST}:${OUT_IMG}.sha256" \
   "${TMPDIR}/"
 
+# 2. Push to deployer user home (no sudo needed)
+DEPLOYER_TMP_DIR="/home/${DEPLOYER_USER}/.upload-tmp-${BUILD_TS}"
+remote_deployer "mkdir -p '${DEPLOYER_TMP_DIR}'"
+
 rsync -avP -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new" \
   "${TMPDIR}/$(basename "${OUT_IMG}")" \
-  "${DEPLOYER_USER}@${DEPLOYER}:${PUBLISH_PATH}"
+  "${DEPLOYER_USER}@${DEPLOYER}:${DEPLOYER_TMP_DIR}/"
 
 rsync -avP -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new" \
   "${TMPDIR}/$(basename "${OUT_IMG}").sha256" \
-  "${DEPLOYER_USER}@${DEPLOYER}:${PUBLISH_PATH}.sha256"
+  "${DEPLOYER_USER}@${DEPLOYER}:${DEPLOYER_TMP_DIR}/"
 
-remote_deployer "sudo chmod 0644 '${PUBLISH_PATH}' '${PUBLISH_PATH}.sha256' || true"
+# 3. Move into nginx directory using sudo on deployer
+remote_deployer "
+  sudo mv '${DEPLOYER_TMP_DIR}/$(basename "${OUT_IMG}")' '${PUBLISH_PATH}' &&
+  sudo mv '${DEPLOYER_TMP_DIR}/$(basename "${OUT_IMG}").sha256' '${PUBLISH_PATH}.sha256' &&
+  sudo chmod 0644 '${PUBLISH_PATH}' '${PUBLISH_PATH}.sha256' &&
+  sudo rm -rf '${DEPLOYER_TMP_DIR}'
+"
+
 remote_deployer "command -v restorecon >/dev/null 2>&1 && sudo restorecon -RF '${DEPLOYER_IMG_DIR}' || true"
-
 # -------------------------
 # cleanup VM definition
 # -------------------------
