@@ -1,0 +1,24 @@
+# Terraform configuration files and state
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+.terraform/
+
+# Sensitive data - do not commit!
+terraform.tfvars
+*.tfvars
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.log.*
