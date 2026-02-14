@@ -16,7 +16,7 @@ export LIBVIRT_DEFAULT_URI="${LIBVIRT_DEFAULT_URI:-qemu+ssh://${KVM_USER}@${KVM_
 export VMNAME="${VMNAME:-rocky9-build}"
 
 #: "${CLOUDSTACK_ZONEID:?Set CLOUDSTACK_ZONEID}"
-: "${CLOUDSTACK_OSTYPEID:?Set CLOUDSTACK_OSTYPEID}"
+#: "${CLOUDSTACK_OSTYPEID:?Set CLOUDSTACK_OSTYPEID}"
 CLOUDSTACK_OSTYPEID="${CLOUDSTACK_OSTYPEID:-"Rocky Linux 9"}"
 
 command -v cmk >/dev/null 2>&1 || { log "ERROR: cmk (Cloudmonkey binary) not found"; exit 1; }
@@ -107,7 +107,7 @@ wait_until_off() {
 
 select_cloudstack_zone() {
 
-  # jeśli już ustawione — nie pytaj
+  # if set don't ask and just use it
   if [[ -n "${CLOUDSTACK_ZONEID:-}" ]]; then
     log "CloudStack: using CLOUDSTACK_ZONEID=${CLOUDSTACK_ZONEID}"
     return 0
