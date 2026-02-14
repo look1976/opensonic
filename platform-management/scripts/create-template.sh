@@ -9,11 +9,11 @@ set -euo pipefail
 # -------------------------
 # CONFIG
 # -------------------------
-DEPLOYER="${DEPLOYER:-deployer}"     # deployer host (serves HTTP repo + will serve qcow2)
-KVM_HOST="${KVM_HOST:-mother.home.lab}"    # KVM host
-KVM_USER="${KVM_USER:-look}"
-LIBVIRT_DEFAULT_URI="${LIBVIRT_DEFAULT_URI:-qemu+ssh://${KVM_USER}@${KVM_HOST}/system}"
-VMNAME="${VMNAME:-rocky9-build}"
+export DEPLOYER="${DEPLOYER:-deployer}"     # deployer host (serves HTTP repo + will serve qcow2)
+export KVM_HOST="${KVM_HOST:-mother.home.lab}"    # KVM host
+export KVM_USER="${KVM_USER:-look}"
+export LIBVIRT_DEFAULT_URI="${LIBVIRT_DEFAULT_URI:-qemu+ssh://${KVM_USER}@${KVM_HOST}/system}"
+export VMNAME="${VMNAME:-rocky9-build}"
 
 # Remote paths (on KVM host)
 DISK_DIR="${DISK_DIR:-/var/lib/libvirt/images}"
