@@ -8,8 +8,6 @@ export KVM_HOST=mother.home.lab
 export KVM_USER=look
 export LIBVIRT_DEFAULT_URI=qemu+ssh://$KVM_USER@$KVM_HOST/system
 
-mkdir -p /var/lib/libvirt/images/rocky9-template
-
 virt-install \
   --name rocky9--build \
   --memory 4096 \
