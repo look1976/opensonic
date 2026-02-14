@@ -93,7 +93,7 @@ dnf -y install \
   virt-install \
   virt-top \
   NetworkManager \
-  libguestfs-tools \
+  guestfs-tools \
   >/dev/null
 
 # ---- CloudStack KVM Agent ----
