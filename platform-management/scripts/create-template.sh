@@ -9,15 +9,16 @@ export KVM_USER=look
 export LIBVIRT_DEFAULT_URI=qemu+ssh://$KVM_USER@$KVM_HOST/system
 
 virt-install \
-  --name rocky9--build \
+  --name rocky9-build \
   --memory 4096 \
   --vcpus 4 \
   --cpu host-passthrough \
-  --disk path=/var/lib/libvirt/images/rocky9-build.qcow2,size=40,format=qcow2,bus=virtio \
+  --disk path=/var/lib/libvirt/images/rocky9-build.qcow2,size=8,format=qcow2,bus=virtio \
   --os-variant rocky9 \
   --network bridge=cloudbr0,model=virtio \
+  --location http://$DEPLOYER/rocky9 \
   --boot network,hd \
   --graphics none \
   --console pty,target_type=serial \
-  --noautoconsole \
+  #--noautoconsole \
   --extra-args "inst.ks=http://$DEPLOYER/kickstarts/rocky9-build.cfg console=ttyS0"
