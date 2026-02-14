@@ -15,17 +15,23 @@ export KVM_USER="${KVM_USER:-look}"
 export LIBVIRT_DEFAULT_URI="${LIBVIRT_DEFAULT_URI:-qemu+ssh://${KVM_USER}@${KVM_HOST}/system}"
 export VMNAME="${VMNAME:-rocky9-build}"
 
+# --- NEW: build timestamp for versioned artifacts ---
+# Format: YYYYMMDD-HHMMSS (safe for filenames + URLs)
+BUILD_TS="${BUILD_TS:-$(date +%Y%m%d-%H%M%S)}"
+
 # Remote paths (on KVM host)
 DISK_DIR="${DISK_DIR:-/var/lib/libvirt/images}"
 DISK_PATH="${DISK_DIR}/${VMNAME}.qcow2"
 
 OUT_DIR="${OUT_DIR:-${DISK_DIR}/golden}"
-OUT_IMG="${OUT_IMG:-${OUT_DIR}/${VMNAME}.qcow2}"
+# --- CHANGED: versioned output image name ---
+OUT_IMG="${OUT_IMG:-${OUT_DIR}/${VMNAME}-${BUILD_TS}.qcow2}"
 
 # Publish target (on DEPLOYER host)
 DEPLOYER_USER="${DEPLOYER_USER:-${KVM_USER}}"
 DEPLOYER_IMG_DIR="${DEPLOYER_IMG_DIR:-/home/www/cloudstack-images}"   # change if your nginx root differs
-PUBLISH_NAME="${PUBLISH_NAME:-${VMNAME}.qcow2}"
+# --- CHANGED: versioned publish name ---
+PUBLISH_NAME="${PUBLISH_NAME:-${VMNAME}-${BUILD_TS}.qcow2}"
 PUBLISH_PATH="${DEPLOYER_IMG_DIR}/${PUBLISH_NAME}"
 
 # VM sizing

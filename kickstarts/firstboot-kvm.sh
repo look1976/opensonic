@@ -94,6 +94,7 @@ dnf -y install \
   virt-top \
   NetworkManager \
   guestfs-tools \
+  rsync \
   >/dev/null
 
 # ---- CloudStack KVM Agent ----
