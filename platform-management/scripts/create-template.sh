@@ -370,7 +370,7 @@ if [[ "${CLOUDSTACK_REGISTER}" == "yes" ]]; then
   cmk registerTemplate \
     name="${TEMPLATE_NAME}" \
     displaytext="Rocky 9 build ${BUILD_TS}" \
-    url="http://${DEPLOYER}/cloudstack-images/${PUBLISH_NAME}" \
+    url="http://${DEPLOYER}:8080/cloudstack-images/${PUBLISH_NAME}" \
     hypervisor=KVM \
     format=QCOW2 \
     ostypeid="${CLOUDSTACK_OSTYPEID}" \
