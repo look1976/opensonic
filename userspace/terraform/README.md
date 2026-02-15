@@ -25,11 +25,12 @@ Edit `terraform.tfvars` and fill in:
 - `cloudstack_api_key` - Your CloudStack API key
 - `cloudstack_secret_key` - Your CloudStack secret key
 - `zone_name` - Name of the CloudStack zone
-- `network_name` - Name of the network
+- `network_id` - ID (UUID) of the network
 - `service_offering` - VM type/flavor (small, medium, large, etc.)
 - `template_name` - Name of the template or ISO image
 
 You can find available templates, zones, and networks in the CloudStack management console.
+`network_id` must be the network UUID, not the network name.
 
 ### 3. Initialize Terraform
 
@@ -67,4 +68,3 @@ terraform apply
 ```bash
 terraform destroy
 ```
-

@@ -39,9 +39,14 @@ variable "zone_name" {
   type        = string
 }
 
-variable "network_name" {
-  description = "Network to attach the VM to"
+variable "network_id" {
+  description = "CloudStack network ID (UUID) to attach the VM to"
   type        = string
+
+  validation {
+    condition     = can(regex("^[0-9a-fA-F-]{36}$", var.network_id))
+    error_message = "network_id must be a CloudStack network UUID (not a network name)."
+  }
 }
 
 variable "environment" {

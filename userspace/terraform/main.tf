@@ -20,7 +20,7 @@ resource "cloudstack_instance" "vm" {
   service_offering = var.service_offering
   template         = var.template_name
   zone             = var.zone_name
-  network          = var.network_name
+  network_id       = var.network_id
 
   # Immediately delete the VM when destroyed (no graceful shutdown)
   expunge = true
@@ -32,7 +32,7 @@ resource "cloudstack_instance" "vm" {
 }
 
 output "instance_ip" {
-  value       = cloudstack_instance.vm.nic[0].ipaddress
+  value       = cloudstack_instance.vm.ip_address
   description = "The IP address of the created instance"
 }
 
