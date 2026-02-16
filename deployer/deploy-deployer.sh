@@ -29,17 +29,17 @@ die() { log "ERROR: $*"; exit 1; }
 # Defaults (override in deploy-deployer.conf)
 # ----------------------------
 : "${DEPLOYER_HOSTNAME:=deployer01}"
-: "${DEPLOYER_DOMAIN:=home.lab}"
-: "${DEPLOYER_IP:=10.11.12.5}"
+: "${DEPLOYER_DOMAIN:=mydomain.local}"
+: "${DEPLOYER_IP:=xxx.zz.yy.vv}"
 : "${DEPLOYER_IFACE:=eno1}"
 
-: "${LAN_SUBNET:=10.11.12.0}"
+: "${LAN_SUBNET:=aaa.bbb.ccc.ddd}"
 : "${LAN_NETMASK:=255.255.255.0}"
 : "${LAN_PREFIX:=24}"
-: "${LAN_GATEWAY:=10.11.12.1}"
-: "${LAN_RANGE_START:=10.11.12.100}"
-: "${LAN_RANGE_END:=10.11.12.200}"
-: "${LAN_DNS1:=10.11.12.1}"
+: "${LAN_GATEWAY:=aaa.bbb.ccc.XYZ}"
+: "${LAN_RANGE_START:=aaa.bbb.ccc.100}"
+: "${LAN_RANGE_END:=aaa.bbb.ccc.200}"
+: "${LAN_DNS1:=abc.abc.abc.abc}"
 : "${LAN_DNS2:=1.1.1.1}"
 
 # PXE
@@ -53,7 +53,7 @@ die() { log "ERROR: $*"; exit 1; }
 : "${PXE_MENU_TITLE:=openSONIC Deployer menu}"
 
 # Rocky ISO
-: "${ROCKY_ISO_URL:=https://download.rockylinux.org/pub/rocky/9/isos/x86_64/Rocky-9.7-x86_64-minimal.iso}"
+: "${ROCKY_ISO_URL:=https://mirror.netsite.dk/rockylinux/9.7/isos/x86_64/Rocky-9.7-x86_64-minimal.iso}"
 : "${ISO_DIR:=${WWW_ROOT}/iso}"
 
 # kickstarts source (optional)
