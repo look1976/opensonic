@@ -40,7 +40,7 @@ log "=== firstboot-kvm starting on $(hostname -f 2>/dev/null || hostname) ==="
 : "${INSTALL_CLOUDSTACK_AGENT:=1}"	# 1 = install agent
 : "${CLOUDSTACK_VERSION:=4.22}"
 : "${DEPLOYER:=10.11.12.2}"          # IP or hostname of the deployer (used for fetching scripts, keys, repos)
-: "${CLOUDSTACK_REPO_URL:=https://download.cloudstack.org/el/8/${CLOUDSTACK_VERSION}/}"
+: "${CLOUDSTACK_REPO_URL:=https://download.cloudstack.org/el/9/${CLOUDSTACK_VERSION}/}"
 : "${CLOUDSTACK_USER:=cloudstack}"
 : "${CLOUDSTACK_AUTH_KEYS_URL:=http://$DEPLOYER/kickstarts/authorized_keys}"
 
@@ -217,7 +217,7 @@ fi
 
 # Helpful extras (safe)
 dnf -y install \
-  libguestfs-tools \
+  guestfs-tools \
   lsof \
   tcpdump \
   >/dev/null || true
